@@ -21,7 +21,8 @@ FORWARD_VEC = {'x': 0, 'y': 0, 'z': 1}
 
 # If the acceleration is greater than this, show a color
 ACCELERATION_THRESHOLD = 0
-
+# We could create individual variables for the three RGB variables that change at different rates and use inside the color functions
+# That way we could have unique color combinations according to not only acceleration, but also direction
 FORWARD_COLOR = [0, 255, 0]
 BACKWARD_COLOR = [255, 0, 0]
 
