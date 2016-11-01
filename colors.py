@@ -11,6 +11,11 @@
 # - fade in to color
 # - wipe forward/backward with color - like audi
 
+# https://learn.adafruit.com/neopixels-on-raspberry-pi/overview
+# https://github.com/jgarff/rpi_ws281x
+# http://abyz.co.uk/rpi/pigpio/python.html
+# https://wiki.qt.io/Apt-get_Qt4_on_the_Raspberry_Pi
+
 import time
 from sense_hat import SenseHat
 
@@ -30,6 +35,12 @@ msleep = lambda x: time.sleep(x / 1000.0)
 
 def dot(vec1, vec2):
     return vec1['x'] * vec2['x'] + vec1['y'] * vec2['y'] + vec1['z'] * vec2['z']
+
+def lerp(a, b, t)
+	return (1 - t) * a + t * b
+
+def lerpColor(color1, color2, t)
+	return [lerp(color1[0], color2[0]), lerp(color1[1], color2[1]), lerp(color1[2], color2[2])]
 
 def get_forward_acceleration():
     raw = sense.get_accelerometer_raw()
