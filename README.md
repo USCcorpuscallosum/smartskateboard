@@ -19,13 +19,13 @@ scons
 cd python
 sudo python setup.py install
 
-git clone https://github.com/USCcorpuscallosum/smartskateboard.git /home/pi/skateboard
+git clone https://github.com/usccorpuscallosum/smartskateboard.git /home/pi/skateboard
 
 # Start program on boot
-sudo echo "python /home/pi/skateboard/colors.py" >> /etc/rc.local
+sudo echo "python /home/pi/skateboard/main.py" >> /etc/rc.local
 
 # Run
-python /home/pi/skateboard/colors.py
+python /home/pi/skateboard/main.py
 ```
 
 #### Copy code to Pi (from laptop)
@@ -38,7 +38,7 @@ scp *.py pi@raspberrypi.local:/home/pi/skateboard
 #### Kill running process
 
 ```sh
-pkill skateboard/colors.py
+pkill -fe skateboard/main.py
 ```
 
 ## Resources
