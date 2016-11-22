@@ -1,5 +1,5 @@
-# pretty-lights
-Coding for smart skateboards and bikes.
+# Smart Skateboard
+Smart skateboards and bikes. Fall 2016.
 
 ## Raspberry Pi Setup
 
@@ -10,7 +10,7 @@ passwd
 
 sudo apt-get update
 sudo apt-get install sense-hat
-sudo apt-get install build-essential python-dev git scons swig # rpi_ws281x
+sudo apt-get install build-essential python-dev git scons swig # for rpi_ws281x
 sudo reboot
 
 git clone https://github.com/jgarff/rpi_ws281x.git
@@ -20,27 +20,25 @@ cd python
 sudo python setup.py install
 
 git clone https://github.com/USCcorpuscallosum/smartskateboard.git /home/pi/skateboard
+
+# Start program on boot
+sudo echo "python /home/pi/skateboard/colors.py" >> /etc/rc.local
+
+# Run
+python /home/pi/skateboard/colors.py
 ```
-
-#### Start program on boot
-
-```sh
-sudo nano /etc/rc.local
-```
-
-Append: `python /home/pi/skateboard/colors.py`
 
 #### Copy code to Pi (from laptop)
 
 ```sh
+cd smartskateboard
 scp *.py pi@raspberrypi.local:/home/pi/skateboard
 ```
 
-Kill running python
+#### Kill running process
 
 ```sh
-ps aux | grep skateboard/colors.py
-sudo kill [pid]
+pkill skateboard/colors.py
 ```
 
 ## Resources
