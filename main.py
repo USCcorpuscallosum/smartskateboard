@@ -3,7 +3,7 @@
 from sense_hat import SenseHat
 from skateboard import *
 # from lights import *
-from util import msleep, fmap, lerpColor
+from util import msleep, fmap, SenseHatColor
 
 # TODO
 # - architect for different configurations - bike, skateboard, golf cart, input, etc. for tech coolness
@@ -13,9 +13,9 @@ from util import msleep, fmap, lerpColor
 
 # We could create individual variables for the three RGB variables that change at different rates and use inside the color functions
 # That way we could have unique color combinations according to not only acceleration, but also direction
-OFF_COLOR = [0, 0, 0]
-FORWARD_COLOR = [0, 255, 0]
-BACKWARD_COLOR = [255, 0, 0]
+OFF_COLOR      = 0x000000
+FORWARD_COLOR  = 0x00ff00
+BACKWARD_COLOR = 0xff0000
 
 sense = SenseHat()
 board = Skateboard(sense)
@@ -26,10 +26,10 @@ while True:
     board.update()
 
     if board.state == Motion.forward:
-        sense.clear(FORWARD_COLOR)
+        sense.clear(SenseHatColor(FORWARD_COLOR))
     elif board.state == Motion.backward:
-        sense.clear(BACKWARD_COLOR)
+        sense.clear(SenseHatColor(BACKWARD_COLOR))
     else:
-        sense.clear(OFF_COLOR)
+        sense.clear(SenseHatColor(OFF_COLOR))
 
     msleep(2)

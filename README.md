@@ -42,8 +42,9 @@ sudo pkill -fe skateboard/main.py
 ```
 
 ## Resources
-- https://learn.adafruit.com/neopixels-on-raspberry-pi/overview
+- https://pythonhosted.org/sense-hat/api/
 - https://github.com/jgarff/rpi_ws281x
+- https://learn.adafruit.com/neopixels-on-raspberry-pi/overview
 - http://abyz.co.uk/rpi/pigpio/python.html
 - https://wiki.qt.io/Apt-get_Qt4_on_the_Raspberry_Pi
 - https://learn.adafruit.com/flora-brakelight-backpack/the-code
