@@ -22,6 +22,7 @@ board = Skateboard(sense)
 
 while True:
     board.update_forward_acceleration()
+    board.update_magnet()
     board.update()
 
     if board.state == Motion.forward:

@@ -1,4 +1,4 @@
-import math
+import math, time
 from euclid import *
 
 # Axes:
@@ -16,31 +16,37 @@ class Motion:
 class Skateboard:
     def __init__(self, sense):
         self.sense = sense;
-        # Forward direction normalized vector
-        self.forward = Vector3(1, 0, 0)
-        # Threshold for no acceleration
-        self.zero_acceleration = 0.05
-        # Max possible acceleration
-        self.max_acceleration = 1.0
-        # Wheel radius in m
-        self.wheel_radius = 0.03 # TODO: measure
-        # Hall effect threshold in uT (micro teslas)
-        self.wheel_magnet_threshold = 0 # TODO: measure
 
-        # Motion state
-        self.state = Motion.stopped
-        self.prev_forward_acceleration = 0
+        # Configuration
+        self.forward = Vector3(1, 0, 0)             # Forward direction normalized vector
+        self.zero_acceleration = 0.05               # Threshold for no acceleration
+        self.max_acceleration = 1.0                 # Max possible acceleration
+        self.wheel_radius = 0.03                    # Wheel radius in m # TODO: measure
+        self.wheel_magnet_near_threshold = 303154   # Close nagnetic threshold in uT (micro teslas) # TODO: measure, 4cm
+        self.wheel_magnet_far_threshold = 76797     # Far magnetic threshold # TODO: measure, 2cm
+        self.speed_smoothing = 0
+
+        # Sensor data
         self.forward_acceleration = 0
         self.compass = 0
         self.magnet = 0
 
+        # Computed values
+        self.state = Motion.stopped
+        self.speed = 0;
+
+        # Internal
+        self._prev_forward_acceleration = 0
+        self._magnet_near = False
+        self._last_magnet_near_time = 0
+
     def update(self):
         # Change motion state when we pass a threshold
         if self.state == Motion.stopped:
-            if self.prev_forward_acceleration < self.zero_acceleration and self.forward_acceleration >= self.zero_acceleration:
+            if self._prev_forward_acceleration < self.zero_acceleration and self.forward_acceleration >= self.zero_acceleration:
                 self.state = Motion.forward
                 # print('forward <- stop')
-            elif self.prev_forward_acceleration > -self.zero_acceleration and self.forward_acceleration <= -self.zero_acceleration:
+            elif self._prev_forward_acceleration > -self.zero_acceleration and self.forward_acceleration <= -self.zero_acceleration:
                 self.state = Motion.backward
                 # print('backward <- stop')
         elif self.state == Motion.forward and self.forward_acceleration <= -self.zero_acceleration:
@@ -50,8 +56,27 @@ class Skateboard:
             self.state = Motion.stopped
             # print('stop <- backward')
 
+        # Calculate speed from magnetic field strength
+        if (self._magnet_near and self.magnet < self.wheel_magnet_far_threshold) or (not self._magnet_near and self.magnet > self.wheel_magnet_near_threshold):
+            # Update near state if we passed a threshold
+            self._magnet_near = not self._magnet_near
+
+            if self._magnet_near:
+                # Calculate the speed using the time difference between this time and the last time
+                now = time.time()
+                if self._last_magnet_near_time > 0:
+                    dt = now - self._last_magnet_near_time
+
+                    # speed = distance / time
+                    # distance = circumference of wheel = 2*pi*r
+                    new_speed = 2. * math.pi * self.wheel_radius / dt
+
+                    # Smooth speed a little
+                    self.speed = self.speed * self.speed_smoothing + new_speed * (1. - self.speed_smoothing)
+                self._last_magnet_near_time = now
+
     def update_forward_acceleration(self):
-        self.prev_forward_acceleration = self.forward_acceleration
+        self._prev_forward_acceleration = self.forward_acceleration
 
         raw_acc = self.sense.get_accelerometer_raw()
         # print("{x}\t{y}\t{z}".format(**raw_acc))
@@ -91,11 +116,9 @@ class Skateboard:
     def update_magnet(self):
         # Magnetometer raw data in uT (micro teslas)
         raw = self.sense.get_compass_raw()
-        print("{x}\t{y}\t{z}".format(**raw))
 
-        magnitude = Vector3(raw['x'], raw['y'], raw['z']).magnitude()
-        print(magnitude)
-        self.magnet = magnitude
+        magnitudeSq = raw['x'] * raw['x'] + raw['y'] * raw['y'] + raw['z'] * raw['z']
+        self.magnet = magnitudeSq
 
     # Compensate the accelerometer readings from gravity.
     # http://www.varesano.net/blog/fabio/simple-gravity-compensation-9-dom-imus
