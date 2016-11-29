@@ -38,7 +38,7 @@ scp *.py pi@raspberrypi.local:/home/pi/skateboard
 #### Kill running process
 
 ```sh
-pkill -fe skateboard/main.py
+sudo pkill -fe skateboard/main.py
 ```
 
 ## Resources

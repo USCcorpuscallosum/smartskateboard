@@ -21,6 +21,7 @@ sense = SenseHat()
 board = Skateboard(sense)
 
 while True:
+    board.update_forward_acceleration()
     board.update()
 
     if board.state == Motion.forward:

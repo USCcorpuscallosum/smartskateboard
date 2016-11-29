@@ -31,10 +31,10 @@ class Skateboard:
         self.state = Motion.stopped
         self.prev_forward_acceleration = 0
         self.forward_acceleration = 0
+        self.compass = 0
+        self.magnet = 0
 
     def update(self):
-        self.update_forward_acceleration()
-
         # Change motion state when we pass a threshold
         if self.state == Motion.stopped:
             if self.prev_forward_acceleration < self.zero_acceleration and self.forward_acceleration >= self.zero_acceleration:
@@ -84,18 +84,18 @@ class Skateboard:
     #     print('{}\t{}\t{}\t{}\t{}\t{}'.format(temp['x'], temp['y'], temp['z'], raw['x'], raw['y'], raw['z']))
     #     return raw;
 
-    def get_compass(self):
+    def update_compass(self):
         orientation = self.sense.get_orientation_degrees()
-        return orientation['yaw']
+        self.compass = orientation['yaw']
 
-    def get_hall(self):
+    def update_magnet(self):
         # Magnetometer raw data in uT (micro teslas)
         raw = self.sense.get_compass_raw()
         print("{x}\t{y}\t{z}".format(**raw))
 
         magnitude = Vector3(raw['x'], raw['y'], raw['z']).magnitude()
         print(magnitude)
-        return magnitude
+        self.magnet = magnitude
 
     # Compensate the accelerometer readings from gravity.
     # http://www.varesano.net/blog/fabio/simple-gravity-compensation-9-dom-imus

@@ -1,7 +1,7 @@
 from neopixel import *
 from util import lerpColor, fmap
 
-# LED strip configuration:
+# LED strip configuration
 LED_COUNT      = 60      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
