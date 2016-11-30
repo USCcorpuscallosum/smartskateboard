@@ -1,6 +1,6 @@
 import time, math, sys
 from neopixel import *
-from util import lerpColor, fmap
+from util import lerpColor, fmap, infinity
 
 # LED strip configuration
 LED_COUNT      = 120     # Number of LED pixels
@@ -17,6 +17,7 @@ LIGHT_DISTANCE = 0.015  # Light separation distance (m)
 strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL, LED_STRIP)
 strip.begin()
 
+
 def wheel(pos):
     """
     Generate rainbow colors across 0-255 positions.
@@ -31,8 +32,6 @@ def wheel(pos):
         pos -= 170
         return Color(0, pos * 3, 255 - pos * 3)
 
-def infinity():
-    return range(sys.maxint)
 
 class LightRange:
     def __init__(self, first, last):

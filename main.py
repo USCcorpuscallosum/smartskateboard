@@ -3,13 +3,13 @@
 from sense_hat import SenseHat
 from skateboard import *
 import lights
-from util import msleep, fmap, SenseHatColor
+from util import SenseHatColor, infinity
 
 # TODO
-# - architect for different configurations - bike, skateboard, golf cart, input, etc. for tech coolness
-# - provide acceleration, velocity, compass input to color fn
 # - what if they are going in the other direction?
 # - wipe forward/backward with color - like audi
+
+UPDATE_TIME = 0.005 # 5ms
 
 # We could create individual variables for the three RGB variables that change at different rates and use inside the color functions
 # That way we could have unique color combinations according to not only acceleration, but also direction
@@ -27,7 +27,7 @@ right_lights = lights.LightRange(119, 60)
 
 left_chase = left_lights.createTheaterChase(0x0000ff)
 
-while True:
+for i in infinity():
     board.update_forward_acceleration()
     board.update_magnet()
     board.update()
@@ -43,7 +43,8 @@ while True:
         last_board_state = board.state
 
     # Show lights
-    next(left_chase)
+    if i % 10 == 0: # update every 50ms
+        next(left_chase)
     right_lights.patternOffsetDistance(PATTERN, board.distance)
 
-    time.sleep(0.005)
+    time.sleep(UPDATE_TIME)
