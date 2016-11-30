@@ -34,13 +34,17 @@ class Skateboard:
         # Computed values
         self.state = Motion.stopped
         self.speed = 0;
+        self.distance = 0;
 
         # Internal
+        self._last_update_time = 0
         self._prev_forward_acceleration = 0
         self._magnet_near = False
         self._last_magnet_near_time = 0
 
     def update(self):
+        now = time.time()
+
         # Change motion state when we pass a threshold
         if self.state == Motion.stopped:
             if self._prev_forward_acceleration < self.zero_acceleration and self.forward_acceleration >= self.zero_acceleration:
@@ -63,7 +67,6 @@ class Skateboard:
 
             if self._magnet_near:
                 # Calculate the speed using the time difference between this time and the last time
-                now = time.time()
                 if self._last_magnet_near_time > 0:
                     dt = now - self._last_magnet_near_time
 
@@ -74,6 +77,13 @@ class Skateboard:
                     # Smooth speed a little
                     self.speed = self.speed * self.speed_smoothing + new_speed * (1. - self.speed_smoothing)
                 self._last_magnet_near_time = now
+
+        # Update total distance
+        # TODO: take direction into account
+        if self._last_update_time > 0:
+            self.distance += self.speed * (now - self._last_update_time)
+
+        self._last_update_time = now
 
     def update_forward_acceleration(self):
         self._prev_forward_acceleration = self.forward_acceleration
