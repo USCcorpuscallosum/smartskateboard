@@ -21,7 +21,7 @@ class Skateboard:
         self.forward = Vector3(1, 0, 0)             # Forward direction normalized vector
         self.zero_acceleration = 0.05               # Threshold for no acceleration (g's)
         self.max_acceleration = 1.0                 # Max possible acceleration (g's)
-        self.wheel_radius = 0.03                    # Wheel radius (m) # TODO: measure
+        self.wheel_radius = 0.0285                  # Wheel radius (m)
         self.wheel_magnet_near_threshold = 303154   # Close magnetic threshold (uT^2) # TODO: measure, 4cm
         self.wheel_magnet_far_threshold = 76797     # Far magnetic threshold (uT^2) # TODO: measure, 2cm
         self.speed_smoothing = 0

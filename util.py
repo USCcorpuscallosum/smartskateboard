@@ -27,7 +27,7 @@ def lerpColor(color1, color2, t):
         (int(lerp((color1 & 0xff000000) >> 24, (color2 & 0xff000000) >> 24, t)) << 24) | \
         (int(lerp((color1 & 0x00ff0000) >> 16, (color2 & 0x00ff0000) >> 16, t)) << 16) | \
         (int(lerp((color1 & 0x0000ff00) >>  8, (color2 & 0x0000ff00) >>  8, t)) <<  8) | \
-         int(lerp((color1 & 0x000000ff)      , (color2 & 0x000000ff)      , t))
+        (int(lerp((color1 & 0x000000ff)      , (color2 & 0x000000ff)      , t))      )
 
 # Blend between two colors by t
 def lerpSenseHatColor(color1, color2, t):
@@ -40,4 +40,4 @@ def SenseHatColor(color):
     return [
         (color & 0xff0000) >> 16,
         (color & 0x00ff00) >>  8,
-         color & 0x0000ff]
+        (color & 0x0000ff)]
