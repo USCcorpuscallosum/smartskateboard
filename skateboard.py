@@ -18,12 +18,13 @@ class Skateboard:
         self.sense = sense;
 
         # Configuration
-        self.forward = Vector3(1, 0, 0)             # Forward direction normalized vector
-        self.zero_acceleration = 0.05               # Threshold for no acceleration (g's)
-        self.max_acceleration = 1.0                 # Max possible acceleration (g's)
-        self.wheel_radius = 0.0285                  # Wheel radius (m)
-        self.wheel_magnet_near_threshold = 303154   # Close magnetic threshold (uT^2) # TODO: measure, 4cm
-        self.wheel_magnet_far_threshold = 76797     # Far magnetic threshold (uT^2) # TODO: measure, 2cm
+        self.forward = Vector3(1, 0, 0)                 # Forward direction normalized vector
+        self.zero_acceleration = 0.05                   # Threshold for no acceleration (g's)
+        self.max_acceleration = 1.0                     # Max possible acceleration (g's)
+        self.wheel_radius = 0.0285                      # Wheel radius (m)
+        # TODO: the Earth's magnetic field affects these when the skateboard turns. How to compensate?
+        self.wheel_magnet_near_threshold = 9900 - 2300  # Close magnetic threshold (uT^2)
+        self.wheel_magnet_far_threshold = 3500 + 2300   # Far magnetic threshold (uT^2)
         self.speed_smoothing = 0
 
         # Sensor data
