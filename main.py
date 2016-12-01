@@ -22,8 +22,8 @@ sense = SenseHat()
 board = Skateboard(sense)
 
 last_board_state = Motion.stopped
-left_lights = lights.LightRange(0, 59)
-right_lights = lights.LightRange(119, 60)
+left_lights = lights.Layout((91, 37))
+right_lights = lights.Layout((92, 107), (0, 36))
 
 left_chase = left_lights.createTheaterChase(0x0000ff)
 

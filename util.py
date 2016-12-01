@@ -40,4 +40,5 @@ def SenseHatColor(color):
 
 def infinity():
     """Create a generator from 0 to a big number."""
-    return range(sys.maxint)
+    for i in range(10000):
+        yield i
