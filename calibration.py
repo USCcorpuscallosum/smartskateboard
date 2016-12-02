@@ -14,6 +14,9 @@ def mark_input():
 sense = SenseHat()
 board = Skateboard(sense)
 
+board.tilt_angle = math.radians(20)
+board.forward = Vector3(math.cos(board.tilt_angle), 0, math.sin(board.tilt_angle))
+
 print('Press Enter to mark a time.\n')
 mark_thread = threading.Thread(target = mark_input)
 mark_thread.daemon = True

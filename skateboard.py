@@ -18,13 +18,13 @@ class Skateboard:
         self.sense = sense;
 
         # Configuration
+        self.tilt_angle = 0                             # Angle of tilt along y axis (radians)
         self.forward = Vector3(1, 0, 0)                 # Forward direction normalized vector
-        self.zero_acceleration = 0.05                   # Threshold for no acceleration (g's)
-        self.max_acceleration = 1.0                     # Max possible acceleration (g's)
+        self.zero_acceleration = 0.10                   # Threshold for no acceleration (g's)
+        self.max_acceleration = 0.75                    # Max possible acceleration (g's)
         self.wheel_radius = 0.0285                      # Wheel radius (m)
-        # TODO: the Earth's magnetic field affects these when the skateboard turns. How to compensate?
-        self.wheel_magnet_near_threshold = 9900 - 2300  # Close magnetic threshold (uT^2)
-        self.wheel_magnet_far_threshold = 3500 + 2300   # Far magnetic threshold (uT^2)
+        self.wheel_magnet_near_threshold = 9500 - 1000  # Close magnetic threshold (uT^2)
+        self.wheel_magnet_far_threshold = 4300 + 1000   # Far magnetic threshold (uT^2)
         self.speed_smoothing = 0
 
         # Sensor data
@@ -66,18 +66,18 @@ class Skateboard:
             # Update near state if we passed a threshold
             self._magnet_near = not self._magnet_near
 
-            if self._magnet_near:
-                # Calculate the speed using the time difference between this time and the last time
-                if self._last_magnet_near_time > 0:
-                    dt = now - self._last_magnet_near_time
+            # Calculate the speed using the time difference between this time and the last time
+            if self._last_magnet_near_time > 0:
+                dt = now - self._last_magnet_near_time
 
-                    # speed = distance / time
-                    # distance = circumference of wheel = 2*pi*r
-                    new_speed = 2. * math.pi * self.wheel_radius / dt
+                # speed = distance / time
+                # distance = circumference of wheel = 2*pi*r
+                # but this is a half rotation, so * 0.5
+                new_speed = 2. * math.pi * self.wheel_radius / dt * 0.5
 
-                    # Smooth speed a little
-                    self.speed = self.speed * self.speed_smoothing + new_speed * (1. - self.speed_smoothing)
-                self._last_magnet_near_time = now
+                # Smooth speed a little
+                self.speed = self.speed * self.speed_smoothing + new_speed * (1. - self.speed_smoothing)
+            self._last_magnet_near_time = now
 
         # Update total distance
         # TODO: take direction into account
@@ -131,18 +131,7 @@ class Skateboard:
         magnitudeSq = raw['x'] * raw['x'] + raw['y'] * raw['y'] + raw['z'] * raw['z']
         self.magnet = magnitudeSq
 
-    # Compensate the accelerometer readings from gravity.
-    # http://www.varesano.net/blog/fabio/simple-gravity-compensation-9-dom-imus
-    # @param q the quaternion representing the orientation
-    # @param acc acceleration in g
-    # @return a vector representing dynamic acceleration in g
     def __gravity_compensate(self, q, acc):
-        g = Vector3()
-
-        # get expected direction of gravity
-        g.x = 2 * (q.y * q.w - q.x * q.z)
-        g.y = 2 * (q.x * q.y + q.z * q.w)
-        g.z = q.x * q.x - q.y * q.y - q.z * q.z + q.w * q.w
-
-        # compensate accelerometer readings with the expected direction of gravity
-        return Vector3(acc.x - g.x, acc.y - g.y, acc.z - g.z)
+        """Compensate the accelerometer readings for gravity."""
+        g = Vector3(-math.sin(self.tilt_angle), 0, -math.cos(self.tilt_angle))
+        return acc - g

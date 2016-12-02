@@ -93,6 +93,14 @@ class Layout:
             yield True
         yield False
 
+    def createMultiColorWipe(self, colors):
+        """Generator to wipe several color across display a pixel at a time."""
+        for i in infinity():
+            for pixel in self.pixel_layout():
+                strip.setPixelColor(pixel, colors[i % len(colors)])
+                strip.show()
+                yield True
+
     def createTheaterChase(self, color):
         """Generator with movie theater light style chaser animation. Based on rpi_ws281x strandtest."""
         while True:
@@ -115,10 +123,11 @@ class Layout:
 
     def createRainbowCycle(self):
         """Generator to draw rainbow that uniformly distributes itself across all pixels. Based on rpi_ws281x strandtest."""
+        SPEED = 5
         for j in infinity():
             pixels = self.pixel_layout()
             for i in range(self.length):
-                strip.setPixelColor(next(pixels), wheel(((i * 256 / self.length) + j) & 255))
+                strip.setPixelColor(next(pixels), wheel(((i * 256 / self.length) + j * SPEED) & 255))
             strip.show()
             yield True
 

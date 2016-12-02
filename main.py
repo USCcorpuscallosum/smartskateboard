@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from sense_hat import SenseHat
+from sense_hat import SenseHat, ACTION_PRESSED, DIRECTION_UP, DIRECTION_LEFT, DIRECTION_DOWN, DIRECTION_RIGHT
 from skateboard import *
 import lights
 from util import SenseHatColor, infinity
@@ -16,18 +16,51 @@ UPDATE_TIME = 0.005 # 5ms
 OFF_COLOR      = SenseHatColor(0x000000)
 FORWARD_COLOR  = SenseHatColor(0x00ff00)
 BACKWARD_COLOR = SenseHatColor(0xff0000)
-PATTERN = [0x00ff0000, 0x00000000, 0x00000000, 0x0000ff00, 0x00000000, 0x00000000]
 
 sense = SenseHat()
 board = Skateboard(sense)
 
+board.tilt_angle = math.radians(20) # Pi is at a ~20 degree incline
+board.forward = Vector3(math.cos(board.tilt_angle), 0, math.sin(board.tilt_angle))
+
+# Change mode with joystick events
+mode = 0
+last_mode = 0
+def handle_joystick(event):
+    global mode
+    if event.action == ACTION_PRESSED:
+        if event.direction == DIRECTION_UP or event.direction == DIRECTION_LEFT:
+            mode = (mode - 1) % MODE_COUNT
+        elif event.direction == DIRECTION_DOWN or event.direction == DIRECTION_RIGHT:
+            mode = (mode + 1) % MODE_COUNT
+sense.stick.direction_any = handle_joystick
+
 last_board_state = Motion.stopped
-left_lights = lights.Layout((91, 37))
-right_lights = lights.Layout((92, 107), (0, 36))
+left_lights = lights.Layout((91, 36))
+right_lights = lights.Layout((92, 107), (0, 35))
 
-left_chase = left_lights.createTheaterChase(0x0000ff)
+# Create modes
+# 0: red/yellow chase with velocity (fight on!)
+# 1: red/yellow wipe
+# 2: flashlight
+# 3: rainbow cycle
+# 4: theater chase rainbow
+# 5: red/green chase with velocity
+# 6: forward/backward
+MODE_COUNT = 7
+M0_PATTERN = [0x00ff0000, 0x00ff0000, 0x00000000, 0x00ffff00, 0x00ffff00, 0x00000000, 0x00000000,]
+m1_left = left_lights.createMultiColorWipe([0x00ff0000, 0x00ffff00])
+m1_right = right_lights.createMultiColorWipe([0x00ff0000, 0x00ffff00])
+m3_left = left_lights.createRainbowCycle()
+m3_right = right_lights.createRainbowCycle()
+m4_left = left_lights.createTheaterChaseRainbow()
+m4_right = right_lights.createTheaterChaseRainbow()
+M5_PATTERN = [0x00ff0000, 0x00000000, 0x00000000, 0x0000ff00, 0x00000000, 0x00000000]
 
+# Main loop
 for i in infinity():
+    # start = time.time()
+
     board.update_forward_acceleration()
     board.update_magnet()
     board.update()
@@ -43,8 +76,41 @@ for i in infinity():
         last_board_state = board.state
 
     # Show lights
-    if i % 10 == 0: # update every 50ms
-        next(left_chase)
-    right_lights.patternOffsetDistance(PATTERN, board.distance)
+    if i % 2 == 0: # update every 50ms
+        if mode != last_mode:
+            left_lights.clear()
+            right_lights.clear()
+            last_mode = mode
 
-    time.sleep(UPDATE_TIME)
+        if mode == 0:
+            left_lights.patternOffsetDistance(M0_PATTERN, -board.distance)
+            right_lights.patternOffsetDistance(M0_PATTERN, -board.distance)
+        elif mode == 1:
+            next(m1_left)
+            next(m1_right)
+        elif mode == 2:
+            left_lights.color(0xffffffff)
+            right_lights.color(0xffffffff)
+        elif mode == 3:
+            next(m3_left)
+            next(m3_right)
+        elif mode == 4:
+            next(m4_left)
+            next(m4_right)
+        elif mode == 5:
+            left_lights.patternOffsetDistance(M5_PATTERN, -board.distance)
+            right_lights.patternOffsetDistance(M5_PATTERN, -board.distance)
+        elif mode == 6:
+            if board.state == Motion.forward:
+                left_lights.color(0x0000ff00)
+                right_lights.color(0x0000ff00)
+            elif board.state == Motion.backward:
+                left_lights.color(0x00ff0000)
+                right_lights.color(0x00ff0000)
+            else:
+                left_lights.color(0x00000000)
+                right_lights.color(0x00000000)
+
+    # duration = time.time() - start
+    # if UPDATE_TIME > duration:
+    #     time.sleep(UPDATE_TIME - duration)
