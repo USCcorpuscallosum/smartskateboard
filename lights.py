@@ -112,6 +112,18 @@ class Layout:
                 for i in range(0, self.length, 3):
                     strip.setPixelColor(self.get_pixel(i + q), 0x000000)
 
+    def createWorm(self, background, foreground, length):
+        """Generator with worm which crawls along pixels."""
+        self.color(background)
+        for i in range(0, length):
+            strip.setPixelColor(self.get_pixel(i), foreground)
+        for j in infinity():
+            for i in range(0, self.length):
+                strip.setPixelColor(self.get_pixel((i + length) % self.length), foreground)
+                strip.setPixelColor(self.get_pixel(i), background)
+                strip.show()
+                yield True
+
     def createRainbow(self):
         """Generator to draw rainbow that fades across all pixels at once. Based on rpi_ws281x strandtest."""
         for j in infinity():

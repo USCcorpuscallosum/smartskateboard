@@ -36,6 +36,7 @@ def handle_joystick(event):
 sense.stick.direction_any = handle_joystick
 
 last_board_state = Motion.stopped
+all_lights = lights.Layout((0, 107))
 left_lights = lights.Layout((91, 36))
 right_lights = lights.Layout((92, 107), (0, 35))
 
@@ -47,7 +48,8 @@ right_lights = lights.Layout((92, 107), (0, 35))
 # 4: theater chase rainbow
 # 5: red/green chase with velocity
 # 6: forward/backward
-MODE_COUNT = 7
+# 7: spinner
+MODE_COUNT = 8
 M0_PATTERN = [0x00ff0000, 0x00ff0000, 0x00000000, 0x00ffff00, 0x00ffff00, 0x00000000, 0x00000000,]
 m1_left = left_lights.createMultiColorWipe([0x00ff0000, 0x00ffff00])
 m1_right = right_lights.createMultiColorWipe([0x00ff0000, 0x00ffff00])
@@ -56,6 +58,7 @@ m3_right = right_lights.createRainbowCycle()
 m4_left = left_lights.createTheaterChaseRainbow()
 m4_right = right_lights.createTheaterChaseRainbow()
 M5_PATTERN = [0x00ff0000, 0x00000000, 0x00000000, 0x0000ff00, 0x00000000, 0x00000000]
+m7_all = all_lights.createWorm(0x00ffff00, 0x00ff0000, 15)
 
 # Main loop
 for i in infinity():
@@ -110,6 +113,8 @@ for i in infinity():
             else:
                 left_lights.color(0x00000000)
                 right_lights.color(0x00000000)
+        elif mode == 7:
+            next(m7_all)
 
     # duration = time.time() - start
     # if UPDATE_TIME > duration:
